@@ -1,4 +1,4 @@
-
+/* Resetando margens e padding para evitar comportamentos inesperados */
 * {
   margin: 0;
   padding: 0;
@@ -31,7 +31,7 @@ h1 {
   font-weight: 500;
 }
 
-
+/* Estilizando o formulário */
 form {
   display: flex;
   flex-direction: column;
@@ -95,7 +95,7 @@ p.loading {
   font-weight: 500;
 }
 
-
+/* Estilos para exibir as informações de endereço */
 div {
   margin-top: 30px;
   text-align: left;
@@ -115,6 +115,7 @@ div p {
   font-size: 16px;
   color: #555;
   margin-bottom: 8px;
+
 }
 
 @media (max-width: 500px) {

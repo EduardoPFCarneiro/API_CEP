@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import './App.css';
 
 function App() {
-  // Definindo os estados'
+  // Definindo os estados
   const [cep, setCep] = useState('');
   const [endereco, setEndereco] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -10,18 +10,37 @@ function App() {
 
   // Função para tratar a mudança no campo de entrada do CEP
   const handleChange = (e) => {
-    setCep(e.target.value);
+    let value = e.target.value;
+
+    // Remover tudo que não for número
+    value = value.replace(/\D/g, '');
+
+    // Adicionar a máscara "00000-000"
+    if (value.length <= 5) {
+      value = value.replace(/(\d{5})(\d{0,3})/, '$1-$2');
+    } else {
+      value = value.replace(/(\d{5})(\d{0,3})/, '$1-$2');
+    }
+
+    setCep(value);
   };
 
   // Função chamada ao submeter o formulário
   const handleSubmit = async (e) => {
-    e.preventDefault(); 
-    setLoading(true);    
+    e.preventDefault();
+    
+    // Aqui, a ideia é começar o "carregando" antes de qualquer outra coisa
+    setLoading(true);
     setError('');        
+    setEndereco(null);   
+
+    // Remover o traço ao enviar para a API
+    const cepSemMascara = cep.replace("-", "");
 
     try {
       // Faz a requisição à API ViaCEP
-      const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+      debugger
+      const response = await fetch(`https://viacep.com.br/ws/${cepSemMascara}/json/`);
 
       if (!response.ok) {
         throw new Error('Erro ao consultar o CEP');
@@ -39,9 +58,10 @@ function App() {
     } catch (err) {
       // Se ocorrer um erro (seja na requisição ou no retorno da API)
       setError(err.message);
-      setEndereco(null); 
+      setEndereco(null); // Limpa o endereço anterior
     } finally {
-      setLoading(false); 
+      // Limpa o timeout para garantir que o "carregando" só desapareça após um tempo
+      setLoading(false); // Desliga o carregando
     }
   };
 
@@ -55,16 +75,16 @@ function App() {
           type="text"
           value={cep}
           onChange={handleChange}
-          placeholder="Ex: 01001000"
-          maxLength="8"
+          placeholder="Ex: 01001-000"
+          maxLength="9" // Limita o tamanho máximo do campo
           required
         />
         <button type="submit" disabled={loading}>Consultar</button>
       </form>
 
-      {loading && <p>Carregando...</p>}
+      {loading && <p className="loading">Carregando...</p>}
 
-      {error && <p style={{ color: 'red' }}>{error}</p>}
+      {error && <p className="error">{error}</p>}
 
       {endereco && (
         <div>
